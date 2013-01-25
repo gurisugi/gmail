@@ -7,6 +7,7 @@ import os
 import smtplib
 import yaml
 import optparse
+import getpass
 from email.MIMEText import MIMEText
 from email.Header import Header
 from email.Utils import formatdate
@@ -20,8 +21,13 @@ def read_config(config_file):
 
     account and password keys are required in the file.
     """
+    if not os.path.exists(config_file):
+        account = raw_input('input from_addr : ')
+        password = getpass.getpass()
+        config = {'account':account, 'password':password}
+    else:
+        config = yaml.load(open(config_file).read())
 
-    config = yaml.load(open(config_file).read())
     not_exist = [setting for setting in ('account', 'password') if not config.has_key(setting)]
     if not_exist:
       print "Could not read %s setting from configration file." % ", ".not_exist
@@ -46,7 +52,7 @@ def parse_options():
                       default=False,
                       action="store_true", help="--body argument as text not file")
     parser.add_option("-c", "--config", dest='config',
-                      default="config.yaml",
+                      default="",
                       metavar="INPUT_FILE", help="Setting file to use gmail server")
     opts, args = parser.parse_args()
     if args:
@@ -78,9 +84,9 @@ def send_via_gmail(account, passwd, to_addrs, msg):
     Send an email through SMTP server of Gmail.
     """
 
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.ehlo()
-    s.starttls()
+    s = smtplib.SMTP_SSL('smtp.gmail.com')
+    #s.ehlo()
+    #s.starttls()
     s.ehlo()
     s.login(account, passwd)
     s.sendmail(account, to_addrs, msg.as_string())
