@@ -41,5 +41,5 @@ Options
     -b INPUT_FILE, --body=INPUT_FILE
             Specify email body read from file
     -t, --text            --body argument as text not file
-    -c INPUT_FILE, --config=INPUT_FILE Setting
-            file to use gmail server
+    -c INPUT_FILE, --config=INPUT_FILE
+            Setting file to use gmail server
