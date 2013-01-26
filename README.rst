@@ -2,8 +2,7 @@ gmail script by Python
 ======================
 
 You can send an email through gmail SMTP server using this script.
-
-This project was forked from tfmagician/gmail.git.
+  This project was forked from tfmagician/gmail.git.
 
 
 Usage
@@ -37,7 +36,10 @@ Options
 
     --version             show program's version number and exit
     -h, --help            show this help message and exit
-    -s STRING, --subject=STRING         Specify subject on command line
-    -b INPUT_FILE, --body=INPUT_FILE            Specify email body read from file
+    -s STRING, --subject=STRING
+            Specify subject on command line
+    -b INPUT_FILE, --body=INPUT_FILE
+            Specify email body read from file
     -t, --text            --body argument as text not file
-    -c INPUT_FILE, --config=INPUT_FILE Setting          file to use gmail server
+    -c INPUT_FILE, --config=INPUT_FILE Setting
+            file to use gmail server
