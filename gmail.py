@@ -21,17 +21,19 @@ def read_config(config_file):
 
     account and password keys are required in the file.
     """
-    if not os.path.exists(config_file):
+
+    config = yaml.load(open(config_file).read())
+    not_exist = []
+    for setting in ['account', 'password']:
+        if not config[setting]:
+            not_exist.append(setting)
+    #not_exist = [setting for setting in ('account', 'password') if not config.has_key(setting)]
+
+    if not_exist:
+        print "Could not read %s setting from configration file." % ", ".join(not_exist)
         account = raw_input('input from_addr : ')
         password = getpass.getpass()
         config = {'account':account, 'password':password}
-    else:
-        config = yaml.load(open(config_file).read())
-
-    not_exist = [setting for setting in ('account', 'password') if not config.has_key(setting)]
-    if not_exist:
-      print "Could not read %s setting from configration file." % ", ".not_exist
-      sys.exist(1)
     return config
 
 def parse_options():
@@ -43,29 +45,29 @@ def parse_options():
     ver = "%s %s" % ("%prog", VERSION)
     parser = optparse.OptionParser(usage, version=ver)
     parser.add_option("-s", "--subject", dest='subject',
-                      default="",
-                      metavar="STRING", help="Specify subject on command line")
+            default="",
+            metavar="STRING", help="Specify subject on command line")
     parser.add_option("-b", "--body", dest='body',
-                      default="",
-                      metavar="INPUT_FILE", help="Specify email body read from file")
+            default="",
+            metavar="INPUT_FILE", help="Specify email body read from file")
     parser.add_option("-t", "--text", dest='text',
-                      default=False,
-                      action="store_true", help="--body argument as text not file")
+            default=False,
+            action="store_true", help="--body argument as text not file")
     parser.add_option("-c", "--config", dest='config',
-                      default="",
-                      metavar="INPUT_FILE", help="Setting file to use gmail server")
+            default=os.environ['HOME'] + "/.gmail.yaml",
+            metavar="INPUT_FILE", help="Setting file to use gmail server")
     opts, args = parser.parse_args()
     if args:
-      files = ['config']
-      if not opts.text: files.append('body')
-      for file in files:
-        if opts.__dict__[file] and not os.access(opts.__dict__[file], os.R_OK):
-          print "Could not read %s from %s." % (file, opts.__dict__[file])
-          sys.exit(1)
-      return opts, args
+        files = ['config']
+        if not opts.text: files.append('body')
+        for file in files:
+            if opts.__dict__[file] and not os.access(opts.__dict__[file], os.R_OK):
+                print "Could not read %s from %s." % (file, opts.__dict__[file])
+                sys.exit(1)
+        return opts, args
     else:
-      parser.print_help()
-      sys.exit(0)
+        parser.print_help()
+        sys.exit(0)
 
 def create_message(from_addr, to_addrs, subject='', body='', encoding='utf-8'):
     """
@@ -100,7 +102,7 @@ def main():
     opts, to_addrs = parse_options()
     settings = read_config(opts.config)
     if opts.body and not opts.text:
-      opts.body = open(opts.body).read()
+        opts.body = open(opts.body).read()
     msg = create_message(settings['account'], to_addrs, opts.subject, opts.body)
     send_via_gmail(settings['account'], settings['password'], to_addrs, msg)
 
